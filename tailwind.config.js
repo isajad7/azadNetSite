@@ -21,4 +21,8 @@ export default {
     },
   },
   plugins: [],
+
+  fontFamily: {
+  sans: ['Vazirmatn', 'ui-sans-serif', 'system-ui'],
+}
 }
