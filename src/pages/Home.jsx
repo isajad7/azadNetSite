@@ -3,11 +3,11 @@ import React, { useState, useEffect } from 'react';
 
 // ... (لینک‌های دانلود ثابت سر جای خودشون) ...
 const DOWNLOAD_LINKS = {
-  android_v8a: "http://app.azadnet.com/content/download/latest/android/v8a/", 
-  android_universal: "http://app.azadnet.com/content/download/latest/android/universal/",
-  windows: "http://app.azadnet.com/content/download/latest/windows/",
-  linux: "http://app.azadnet.com/content/download/latest/linux/",
-  macos: "http://app.azadnet.com/content/download/latest/macos/"
+  android_v8a: "http://app.azadnet.site/content/download/latest/android/v8a/", 
+  android_universal: "http://app.azadnet.site/content/download/latest/android/universal/",
+  windows: "http://app.azadnet.site/content/download/latest/windows/",
+  linux: "http://app.azadnet.site/content/download/latest/linux/",
+  macos: "http://app.azadnet.site/content/download/latest/macos/"
 };
 
 const HomePage = () => {
