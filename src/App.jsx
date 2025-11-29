@@ -1,15 +1,18 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Clarity from '@microsoft/clarity';
-import { SpeedInsights } from "@vercel/speed-insights/react"
 
-// Layouts & Pages (ایمپورت کردن فایل‌هایی که ساختیم)
+// 👇 ایمپورت ابزارهای ورسل
+import { SpeedInsights } from "@vercel/speed-insights/react"
+import { Analytics } from "@vercel/analytics/react"
+
+// Layouts & Pages
 import Navbar from './components/layout/Navbar';
-import Footer from './components/layout/Footer.jsx'; // (این رو هم بساز)
+import Footer from './components/layout/Footer';
 import HomePage from './pages/Home';
-import PrivacyPage from './pages/Privacy'; // (کد قبلی رو ببر تو فایل جدید)
-import SupportPage from './pages/Support'; // (کد قبلی رو ببر تو فایل جدید)
-import NotFound from './pages/NotFound';   // (کد قبلی رو ببر تو فایل جدید)
+import PrivacyPage from './pages/Privacy';
+import SupportPage from './pages/Support';
+import NotFound from './pages/NotFound';
 
 const CLARITY_PROJECT_ID = "ub89u210sm";
 
@@ -42,7 +45,10 @@ function App() {
         </main>
         
         <Footer />
+
+        {/* 👇 ابزارهای مانیتورینگ ورسل (هر دو کنار هم) */}
         <SpeedInsights />
+        <Analytics />
         
       </div>
     </Router>
