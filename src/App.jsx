@@ -1,9 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
+// ایمپورت Clarity
+import Clarity from '@microsoft/clarity';
+
+// --- CONFIGURATION ---
+const CLARITY_PROJECT_ID = "ub89u210sm";
+
+const DOWNLOAD_LINKS = {
+  // لینک نسخه v8a (پیش‌فرض و سبک)
+  android_v8a: "http://app.azadnet.site/content/download/latest/android/v8a/", 
+  // لینک نسخه یونیورسال (سنگین‌تر - برای همه گوشی‌ها)
+  android_universal: "http://app.azadnet.site/content/download/latest/android/universal/",
+  
+  windows: "http://app.azadnet.site/content/download/latest/windows/",
+  linux: "http://app.azadnet.site/content/download/latest/linux/",
+  macos: "http://app.azadnet.site/content/download/latest/macos/"
+};
 
 // --- Components ---
 
-// 1. Scroll To Top (برای اینکه وقتی صفحه عوض میشه بره بالا)
+// 1. Scroll To Top
 function ScrollToTop() {
   const { pathname } = useLocation();
   useEffect(() => {
@@ -33,14 +49,12 @@ function Navbar() {
             </span>
           </Link>
           
-          {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8 space-x-reverse">
             <Link to="/" className="text-sm font-medium hover:text-neonBlue transition-colors">خانه</Link>
             <Link to="/support" className="text-sm font-medium hover:text-neonBlue transition-colors">آموزش و پشتیبانی</Link>
             <Link to="/privacy" className="text-sm font-medium hover:text-gray-300 transition-colors text-gray-500">حریم خصوصی</Link>
           </div>
 
-          {/* Mobile Menu Icon */}
           <div className="md:hidden">
             <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-white p-2">
                <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={isMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} /></svg>
@@ -49,7 +63,6 @@ function Navbar() {
         </div>
       </div>
       
-      {/* Mobile Dropdown */}
       {isMenuOpen && (
         <div className="md:hidden bg-darkBg border-b border-white/10 absolute w-full">
            <div className="flex flex-col p-4 space-y-4 text-center">
@@ -80,28 +93,69 @@ function Footer() {
   );
 }
 
+// 4. NotFound Component (صفحه ۴۰۴ اختصاصی)
+function NotFound() {
+  return (
+    <div className="flex flex-col items-center justify-center min-h-[70vh] text-center px-4 pt-20">
+      <div className="text-9xl font-black text-neonBlue opacity-20 select-none blur-sm">404</div>
+      <h2 className="text-3xl font-bold text-white -mt-10 mb-4 z-10">مسیر را گم کرده‌اید؟</h2>
+      <p className="text-gray-400 mb-8 max-w-md mx-auto">
+        صفحه‌ای که به دنبال آن هستید وجود ندارد یا حذف شده است.
+      </p>
+      <Link to="/" className="inline-flex items-center gap-2 bg-neonBlue text-black font-bold px-8 py-3 rounded-full hover:shadow-[0_0_20px_rgba(0,243,255,0.4)] transition-all z-10">
+        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
+        بازگشت به خانه
+      </Link>
+    </div>
+  );
+}
+
 // --- Pages ---
 
 // PAGE 1: HOME
 function HomePage() {
+  const [androidVersion, setAndroidVersion] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // دریافت آخرین نسخه از API
+  useEffect(() => {
+    fetch('https://api.azadnet.com/content/versions/?platform=android')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.length > 0) {
+            setAndroidVersion(data[0].version_number); 
+        }
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error("Failed to fetch version", err);
+        setLoading(false);
+      });
+  }, []);
+
   return (
     <div className="pb-20 md:pb-0">
-       {/* Background */}
+       {/* --- Background & Blobs --- */}
        <div className="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
           <div className="absolute top-[-10%] left-[-20%] w-64 h-64 md:w-96 md:h-96 bg-neonPurple rounded-full mix-blend-screen filter blur-[100px] opacity-30 animate-blob"></div>
           <div className="absolute bottom-[20%] right-[-20%] w-72 h-72 md:w-96 md:h-96 bg-neonBlue rounded-full mix-blend-screen filter blur-[100px] opacity-30 animate-blob animation-delay-2000"></div>
        </div>
 
-      {/* Hero */}
+      {/* --- Hero Section --- */}
       <section className="relative pt-32 pb-16 px-4 max-w-7xl mx-auto flex flex-col-reverse md:flex-row items-center gap-12">
+        
+        {/* Left Column: Text & Buttons */}
         <div className="flex-1 text-center md:text-right z-10">
+          
+          {/* Version Badge */}
           <div className="inline-flex items-center gap-2 px-3 py-1 mb-6 rounded-full border border-neonBlue/30 bg-neonBlue/5 text-neonBlue text-xs font-bold">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-neonBlue opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-neonBlue"></span>
             </span>
-            تکنولوژی V2Ray بدون لاگ
+            {loading ? "در حال دریافت نسخه..." : `نسخه رسمی ${androidVersion || 'جدید'}`}
           </div>
+
           <h1 className="text-5xl md:text-7xl font-black mb-6 leading-tight">
             اینترنت آزاد <br/>
             برای <span className="text-transparent bg-clip-text bg-gradient-to-r from-neonBlue to-neonPurple">همه یا هیچکس</span>
@@ -110,24 +164,52 @@ function HomePage() {
              آزادنت با استفاده از زیرساخت قدرتمند V2Ray و رمزنگاری پیشرفته، امن‌ترین مسیر را برای دسترسی شما به اینترنت آزاد فراهم می‌کند.
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-             {/* Android Button */}
-             <a href="#" className="flex items-center justify-center gap-3 px-8 py-4 bg-neonBlue text-black font-bold rounded-2xl hover:shadow-[0_0_20px_rgba(0,243,255,0.4)] hover:scale-105 transition-all">
-               <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M17.523 15.3414C17.523 15.3414 17.523 15.3414 17.523 15.3414C17.523 15.3414 17.523 15.3414 17.523 15.3414ZM6.47698 15.3414C6.47698 15.3414 6.47698 15.3414 6.47698 15.3414C6.47698 15.3414 6.47698 15.3414 6.47698 15.3414ZM3.59398 12.3364L3.19098 12.3364C3.19098 12.3364 3.19098 12.3364 3.19098 12.3364L3.59398 12.3364ZM20.406 12.3364L20.809 12.3364C20.809 12.3364 20.809 12.3364 20.809 12.3364L20.406 12.3364Z"/></svg>
-               دانلود اندروید (APK)
-             </a>
-             {/* Windows Button */}
-             <a href="#" className="flex items-center justify-center gap-3 px-8 py-4 border border-white/20 text-white font-bold rounded-2xl hover:border-neonPurple hover:text-neonPurple transition-all">
-                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M0 3.449L9.75 2.1v9.451H0V3.449zm10.949-1.68L24 0v11.4h-13.051V1.769zM0 12.6h9.75v9.451L0 20.55V12.6zm10.949 0H24v11.4l-13.051-1.631V12.6z"/></svg>
-                نسخه ویندوز
-             </a>
+          {/* --- Download Buttons Area --- */}
+          <div className="flex flex-col gap-6 mt-8">
+             <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start items-start">
+                 
+                 {/* 1. Android Button Group */}
+                 <div className="flex flex-col items-center md:items-start gap-2 w-full sm:w-auto">
+                     {/* Primary Button (v8a) */}
+                     <a href={DOWNLOAD_LINKS.android_v8a} className="w-full sm:w-auto group flex items-center justify-center gap-3 px-8 py-4 bg-neonBlue text-black font-bold rounded-2xl hover:shadow-[0_0_20px_rgba(0,243,255,0.4)] hover:scale-105 transition-all relative overflow-hidden">
+                       <div className="absolute top-0 left-[-100%] w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent group-hover:animate-shine transition-all"></div>
+                       <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M17.523 15.3414C17.523 15.3414 17.523 15.3414 17.523 15.3414C17.523 15.3414 17.523 15.3414 17.523 15.3414ZM6.47698 15.3414C6.47698 15.3414 6.47698 15.3414 6.47698 15.3414C6.47698 15.3414 6.47698 15.3414 6.47698 15.3414ZM3.59398 12.3364L3.19098 12.3364C3.19098 12.3364 3.19098 12.3364 3.19098 12.3364L3.59398 12.3364ZM20.406 12.3364L20.809 12.3364C20.809 12.3364 20.809 12.3364 20.809 12.3364L20.406 12.3364Z"/></svg>
+                       <div className="flex flex-col items-start leading-tight">
+                          <span>دانلود مستقیم</span>
+                          <span className="text-[10px] opacity-70 font-normal">نسخه بهینه (Arm64)</span>
+                       </div>
+                     </a>
+                     
+                     {/* Universal Link (Fallback) */}
+                     <a href={DOWNLOAD_LINKS.android_universal} className="text-xs text-gray-500 hover:text-white transition-colors flex items-center gap-1 pr-2 cursor-pointer">
+                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        روی گوشیتون نصب نشد؟ <span className="underline decoration-dotted decoration-gray-600 underline-offset-4 hover:decoration-neonBlue hover:text-neonBlue">دانلود نسخه یونیورسال</span>
+                     </a>
+                 </div>
+
+                 {/* 2. Windows Button */}
+                 <a href={DOWNLOAD_LINKS.windows} className="w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-4 border border-white/20 text-white font-bold rounded-2xl hover:border-neonPurple hover:text-neonPurple transition-all h-[60px]">
+                    <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M0 3.449L9.75 2.1v9.451H0V3.449zm10.949-1.68L24 0v11.4h-13.051V1.769zM0 12.6h9.75v9.451L0 20.55V12.6zm10.949 0H24v11.4l-13.051-1.631V12.6z"/></svg>
+                    نسخه ویندوز
+                 </a>
+             </div>
           </div>
-          <div className="mt-4 flex items-center justify-center md:justify-start gap-4 text-sm text-gray-500">
-             <span>🐧 نسخه لینوکس موجود است</span>
-             <span>🛡️ اسکن شده و امن</span>
+
+          {/* Other Platforms Links */}
+          <div className="mt-8 flex flex-wrap items-center justify-center md:justify-start gap-4 text-sm text-gray-500">
+             <a href={DOWNLOAD_LINKS.linux} className="hover:text-white transition-colors flex items-center gap-1">
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12.031 2c-1.077 0-1.776.685-1.776 1.706 0 .979.792 1.956 1.776 1.956.963 0 1.756-.977 1.756-1.956 0-1.002-.699-1.706-1.756-1.706zm-2.909 6.273c-.926 0-1.284.872-1.284.872l-.375 2.186c-.234 1.378-1.547 2.138-1.547 2.138s-.809.52-1.026 1.258c-.216.74.887 1.107 1.259.619.336-.441 2.222-1.464 2.222-1.464l.974 3.09s-.04 1.766-1.396 2.455c-1.356.687-1.489 1.83-1.011 2.438.479.608 1.905-.008 2.662-.71.757-.701.35-1.298.35-1.298l-.297-1.474s.672.235 1.581.246c.928.01 1.631-.226 1.631-.226l-.37 1.484s-.37 1.042.482 1.722c.852.68 2.164.839 2.569.155.405-.684.095-1.854-1.256-2.502-1.349-.648-1.401-2.455-1.401-2.455l.951-3.082s1.956 1.056 2.296 1.53c.341.474 1.488.083 1.268-.66-.22-.741-1.025-1.258-1.025-1.258s-1.316-.76-1.554-2.138l-.374-2.186s-.358-.872-1.284-.872c-.908 0-1.266.602-1.266.602l-.462 2.607s-.101.442-.857.433c-.767-.008-.857-.423-.857-.423l-.532-2.617s-.358-.602-1.266-.602z"/></svg>
+                دانلود لینوکس
+             </a>
+             <span className="text-white/20">|</span>
+             <a href={DOWNLOAD_LINKS.macos} className="hover:text-white transition-colors flex items-center gap-1">
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.21-1.96 1.07-3.11-1.05.05-2.31.74-3.03 1.58-.67.77-1.24 2-1.06 3.14 1.16.09 2.34-.78 3.02-1.61"/></svg>
+                دانلود مک‌او‌اس
+             </a>
           </div>
         </div>
 
+        {/* Right Column: Phone Mockup */}
         <div className="flex-1 flex justify-center relative w-full">
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-neonPurple/40 rounded-full filter blur-[60px] animate-pulse"></div>
             <img 
@@ -136,10 +218,17 @@ function HomePage() {
               className="relative z-10 w-[280px] md:w-[320px] rounded-[2.5rem] border-4 border-gray-900 shadow-2xl animate-float"
               onError={(e) => {e.target.src = 'https://placehold.co/320x650/0a0a0a/00f3ff?text=AZADNET&font=roboto'; e.target.style.borderRadius = '2.5rem';}}
             />
+            
+            {!loading && (
+                <div className="absolute bottom-20 -left-4 bg-black/80 backdrop-blur border border-neonBlue/30 px-4 py-2 rounded-xl animate-float animation-delay-1000">
+                    <p className="text-xs text-gray-400">آخرین بروزرسانی</p>
+                    <p className="text-sm font-bold text-neonBlue">v{androidVersion}</p>
+                </div>
+            )}
         </div>
       </section>
 
-      {/* Trust Stats */}
+      {/* --- Trust Stats --- */}
       <section className="py-10 border-y border-white/5 bg-black/20 backdrop-blur-sm">
          <div className="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div><h3 className="text-3xl font-bold text-white">بدون لاگ</h3><p className="text-gray-500 text-sm">حریم خصوصی مطلق</p></div>
@@ -149,9 +238,9 @@ function HomePage() {
          </div>
       </section>
       
-      {/* Mobile Sticky Bar */}
+      {/* --- Mobile Sticky Bar --- */}
       <div className="fixed bottom-0 left-0 w-full z-40 md:hidden bg-black/90 backdrop-blur-xl border-t border-white/10 p-4 pb-6">
-        <a href="#" className="flex w-full bg-gradient-to-r from-neonBlue to-neonPurple text-black font-extrabold py-3.5 rounded-xl justify-center items-center gap-2 shadow-[0_0_15px_rgba(188,19,254,0.3)]">
+        <a href={DOWNLOAD_LINKS.android_v8a} className="flex w-full bg-gradient-to-r from-neonBlue to-neonPurple text-black font-extrabold py-3.5 rounded-xl justify-center items-center gap-2 shadow-[0_0_15px_rgba(188,19,254,0.3)]">
             دانلود مستقیم اندروید
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
         </a>
@@ -159,8 +248,7 @@ function HomePage() {
     </div>
   );
 }
-
-// PAGE 2: PRIVACY POLICY (Google Play Compliant)
+// PAGE 2: PRIVACY POLICY
 function PrivacyPage() {
   return (
     <div className="pt-32 pb-20 max-w-4xl mx-auto px-6 text-gray-300">
@@ -216,7 +304,7 @@ function PrivacyPage() {
   );
 }
 
-// PAGE 3: SUPPORT & FAQ
+// PAGE 3: SUPPORT
 function SupportPage() {
   const faqs = [
     { q: "چرا آزادنت وصل نمی‌شود؟", a: "ابتدا اتصال اینترنت خود را چک کنید. سپس مطمئن شوید که آخرین نسخه اپلیکیشن را نصب کرده‌اید. اگر مشکل ادامه داشت، سرور را تغییر دهید یا اشتراک خود را بررسی کنید." },
@@ -258,6 +346,14 @@ function SupportPage() {
 
 // --- MAIN APP COMPONENT ---
 function App() {
+  // Initialization of Clarity (Run Once)
+  useEffect(() => {
+    // اگر آیدی کلارتی هنوز ست نشده، اجرا نشه تا ارور نده
+    if(CLARITY_PROJECT_ID !== "YOUR_CLARITY_ID_HERE") {
+        Clarity.init(CLARITY_PROJECT_ID);
+    }
+  }, []);
+
   return (
     <Router>
       <ScrollToTop />
@@ -268,6 +364,8 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="/support" element={<SupportPage />} />
+            {/* مسیر ۴۰۴ برای هر آدرسی که پیدا نشود */}
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
         <Footer />
