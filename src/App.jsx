@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Clarity from '@microsoft/clarity';
+import { SpeedInsights } from "@vercel/speed-insights/react"
 
 // Layouts & Pages (ایمپورت کردن فایل‌هایی که ساختیم)
 import Navbar from './components/layout/Navbar';
@@ -41,6 +42,7 @@ function App() {
         </main>
         
         <Footer />
+        <SpeedInsights />
         
       </div>
     </Router>
